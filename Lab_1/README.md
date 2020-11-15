@@ -198,24 +198,24 @@ You are now logged in.
 ```
 Теперь публикуем полученный бокс:
 ```
-vagrant cloud publish --release <username>/centos-7-5 1.0 virtualbox \
-        centos-7.7.1908-kernel-5-x86_64-Minimal.box
+vagrant cloud publish --release <username>/centos-7-8 1.0 virtualbox \
+        centos-7.8.2003-kernel-5-x86_64-Minimal.box
 ```
 Здесь:
  - `cloud publish` - загрузить образ в облако;
  - `release` - указывает на необходимость публикации образа после загрузки;
- - `<username>/centos-7-5` - `username`, указаный при публикации и имя образа;
+ - `<username>/centos-7-8` - `username`, указаный при публикации и имя образа;
  - `1.0` - версия образа;
  - `virtualbox` - провайдер;
- - `centos-7.7.1908-kernel-5-x86_64-Minimal.box` - имя файла загружаемого образа;
+ - `centos-7.8.2003-kernel-5-x86_64-Minimal.box` - имя файла загружаемого образа;
 
 После успешной загрузки вы получите сообщение:
 
 ```
-Complete! Published <username>/centos-7-5
-tag:             <username>/centos-7-5-cli
+Complete! Published <username>/centos-7-8
+tag:             <username>/centos-7-8-cli
 username:        <username>
-name:            centos-7-5
+name:            centos-7-8
 private:         false
 ...
 providers:       virtualbox
