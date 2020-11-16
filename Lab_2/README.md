@@ -387,7 +387,27 @@ sde         8:64   0  250M  0 disk
   └─md0p5 259:4    0   98M  0 md     /raid/part5
 sdf         8:80   0  250M  0 disk
 ```
-
-
+**19) Провижинг в вагрант файле для автоматической сборки RAID 10**
+```
+box.vm.provision "shell", inline: <<-SHELL
+	mkdir -p ~root/.ssh
+	cp ~vagrant/.ssh/auth* ~root/.ssh
+	yum install -y mdadm smartmontools hdparm gdisk
+	# Script for RAID
+	mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
+	mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
+	echo "DEVICE partitions" | sudo tee /etc/mdadm/mdadm.conf
+	sudo mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' | sudo tee -a /etc/mdadm/mdadm.conf
+	parted -s /dev/md0 mklabel gpt
+	parted /dev/md0 mkpart primary ext4 0% 20%
+	parted /dev/md0 mkpart primary ext4 20% 40%
+	parted /dev/md0 mkpart primary ext4 40% 80%
+	parted /dev/md0 mkpart primary ext4 80% 90%
+	parted /dev/md0 mkpart primary ext4 90% 100%
+	for i in $(seq 1 5); do mkfs.ext4 /dev/md0p$i; done
+	mkdir -p /raid/part{1,2,3,4,5}
+	for i in $(seq 1 5); do  mount /dev/md0p$i /raid/part$i; done
+SHELL
+```
 
 
