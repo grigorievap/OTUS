@@ -6,7 +6,7 @@ Lab_1 - базовая часть
 packer\core - ядро из исходников + shared folder work
 ```
 
-# **Установка ПО (Debian 64-bit )**
+# **Установка ПО (Windows 10)**
 
 ### **Vagrant**
 https://www.vagrantup.com/downloads.html
