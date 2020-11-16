@@ -18,11 +18,11 @@
 Решение:
 ---
 
-1) vagrant up
+**1) vagrant up**
 
-2) vagrant ssh
+**2) vagrant ssh**
 
-3) Смотри что за диски
+**3) Смотри что за диски**
 ```
 [vagrant@otuslinux ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
