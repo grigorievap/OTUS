@@ -396,8 +396,9 @@ box.vm.provision "shell", inline: <<-SHELL
 	# Script for RAID
 	mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
 	mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
-	echo "DEVICE partitions" | sudo tee /etc/mdadm/mdadm.conf
-	sudo mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' | sudo tee -a /etc/mdadm/mdadm.conf
+	mkdir -pm 700 /etc/mdadm
+	echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
+	mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
 	parted -s /dev/md0 mklabel gpt
 	parted /dev/md0 mkpart primary ext4 0% 20%
 	parted /dev/md0 mkpart primary ext4 20% 40%
