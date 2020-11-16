@@ -21,7 +21,9 @@
 
 2) vagrant ssh
 
-3)[vagrant@otuslinux ~]$ lsblk
+3) Смотри что за диски
+```
+[vagrant@otuslinux ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0   40G  0 disk
 └─sda1   8:1    0   40G  0 part /
@@ -30,16 +32,18 @@ sdc      8:32   0  250M  0 disk
 sdd      8:48   0  250M  0 disk
 sde      8:64   0  250M  0 disk
 sdf      8:80   0  250M  0 disk
+```
+4)Зануляем суперблоки:```
 
-4)Зануляем суперблоки:
 [vagrant@otuslinux ~]$ sudo  mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
 mdadm: Unrecognised md component device - /dev/sdd
 mdadm: Unrecognised md component device - /dev/sde
 mdadm: Unrecognised md component device - /dev/sdf
-
+```
 5) Создаем RAID10 с 4 дисками
+```
 [vagrant@otuslinux ~]$ sudo mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
 mdadm: layout defaults to n2
 mdadm: layout defaults to n2
@@ -47,6 +51,7 @@ mdadm: chunk size defaults to 512K
 mdadm: size set to 253952K
 mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
+```
 
 6) Проверяем собранный RAID
 [vagrant@otuslinux ~]$ cat /proc/mdstat
