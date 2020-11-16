@@ -15,10 +15,10 @@
 
 ---
 Решение:
-
-
+---
+---
 1) vagrant up
-
+---
 2) vagrant ssh
 
 3) Смотри что за диски
@@ -219,7 +219,7 @@ Consistency Policy : resync
        2       8       48        2      active sync set-A   /dev/sdd
        4       8       64        3      active sync set-B   /dev/sde
 ```
-14)Создаем раздел GPT
+14) Создаем раздел GPT
 ```
 [vagrant@otuslinux ~]$ sudo parted -s /dev/md0 mklabel gpt
 ```
