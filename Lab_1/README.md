@@ -1,11 +1,11 @@
 # **Введение**
+---
 
 ```
 Lab_1 - базовая часть
 packer\core - ядро из исходников + shared folder work
 ```
 
----
 # **Установка ПО (Debian 64-bit )**
 
 ### **Vagrant**
