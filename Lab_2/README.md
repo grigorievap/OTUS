@@ -34,7 +34,7 @@ sdd      8:48   0  250M  0 disk
 sde      8:64   0  250M  0 disk
 sdf      8:80   0  250M  0 disk
 ```
-4) Зануляем суперблоки:
+**4) Зануляем суперблоки:**
 ```
 [vagrant@otuslinux ~]$ sudo  mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
 mdadm: Unrecognised md component device - /dev/sdb
@@ -43,7 +43,7 @@ mdadm: Unrecognised md component device - /dev/sdd
 mdadm: Unrecognised md component device - /dev/sde
 mdadm: Unrecognised md component device - /dev/sdf
 ```
-5) Создаем RAID10 с 4 дисками
+**5) Создаем RAID10 с 4 дисками**
 ```
 [vagrant@otuslinux ~]$ sudo mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
 mdadm: layout defaults to n2
@@ -54,7 +54,7 @@ mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
 ```
 
-6) Проверяем собранный RAID
+**6) Проверяем собранный RAID**
 ```
 [vagrant@otuslinux ~]$ cat /proc/mdstat
 Personalities : [raid10]
@@ -97,13 +97,13 @@ Consistency Policy : resync
        3       8       64        3      active sync set-B   /dev/sde
 ```
 
-7) Смотрим инфу перед созданием mdadm.conf
+**7) Смотрим инфу перед созданием mdadm.conf**
 ```
 [vagrant@otuslinux ~]$ sudo mdadm --detail --scan --verbose
 ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=otuslinux:0 UUID=b496ec7c:bcb64210:5044661d:4c277083
    devices=/dev/sdb,/dev/sdc,/dev/sdd,/dev/sde
 ```
-8) Создаем mdadm.conf
+**8) Создаем mdadm.conf**
 ```
 [vagrant@otuslinux ~]$ echo "DEVICE partitions" | sudo tee /etc/mdadm/mdadm.conf
 [vagrant@otuslinux ~]$ sudo mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' | sudo tee -a /etc/mdadm/mdadm.conf
@@ -113,12 +113,12 @@ DEVICE partitions
 ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=otuslinux:0 UUID=b496ec7c:bcb64210:5044661d:4c277083
 [vagrant@otuslinux ~]$
 ```
-9) Ломаем RAID
+**9) Ломаем RAID**
 ```
 [vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --fail /dev/sde
 mdadm: set /dev/sde faulty in /dev/md0
 ```
-10) Смотрим что получилось
+**10) Смотрим что получилось**
 ```
 [vagrant@otuslinux ~]$  cat /proc/mdstat
 Personalities : [raid10]
@@ -168,17 +168,17 @@ Consistency Policy : resync
 
        3       8       64        -      faulty   /dev/sde
 ```
-11) Удаляем диск из массива
+**11) Удаляем диск из массива**
 ```
 [vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --remove /dev/sde
 mdadm: hot removed /dev/sde from /dev/md0
 ```
-12) Добавляем диск с массив
+**12) Добавляем диск с массив**
 ```
 [vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --add /dev/sde
 mdadm: added /dev/sde
 ```
-13) Проверяем 
+**13) Проверяем**
 ```
 [vagrant@otuslinux ~]$ cat /proc/mdstat
 Personalities : [raid10]
@@ -220,11 +220,11 @@ Consistency Policy : resync
        2       8       48        2      active sync set-A   /dev/sdd
        4       8       64        3      active sync set-B   /dev/sde
 ```
-14) Создаем раздел GPT
+**14) Создаем раздел GPT**
 ```
 [vagrant@otuslinux ~]$ sudo parted -s /dev/md0 mklabel gpt
 ```
-15) Создаем партиций
+**15) Создаем партиций**
 ```
 [vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 0% 20%
 [vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 20% 40%
@@ -232,7 +232,7 @@ Consistency Policy : resync
 [vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 60% 80%
 [vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 80% 100%
 ```
-16) Создаем ФС на партициях 
+**16) Создаем ФС на партициях**
 ```
 [vagrant@otuslinux ~]$ for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
 mke2fs 1.42.9 (28-Dec-2013)
@@ -340,13 +340,13 @@ Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 ```
-17) Создаем каталоги, куда смонтируются разделы
+**17) Создаем каталоги, куда смонтируются разделы**
 ```
 [vagrant@otuslinux ~]$ sudo mkdir -p /raid/part{1,2,3,4,5}
 [vagrant@otuslinux ~]$ ls /raid/
 part1  part2  part3  part4  part5
 ```
-18) Монтируем и проверяем
+**18) Монтируем и проверяем**
 ```
 [vagrant@otuslinux ~]$ sudo -s
 [root@otuslinux vagrant]#
