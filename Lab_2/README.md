@@ -33,8 +33,8 @@ sdd      8:48   0  250M  0 disk
 sde      8:64   0  250M  0 disk
 sdf      8:80   0  250M  0 disk
 ```
-4)Зануляем суперблоки:```
-
+4)Зануляем суперблоки:
+```
 [vagrant@otuslinux ~]$ sudo  mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
@@ -54,6 +54,7 @@ mdadm: array /dev/md0 started.
 ```
 
 6) Проверяем собранный RAID
+```
 [vagrant@otuslinux ~]$ cat /proc/mdstat
 Personalities : [raid10]
 md0 : active raid10 sde[3] sdd[2] sdc[1] sdb[0]
@@ -93,7 +94,7 @@ Consistency Policy : resync
        1       8       32        1      active sync set-B   /dev/sdc
        2       8       48        2      active sync set-A   /dev/sdd
        3       8       64        3      active sync set-B   /dev/sde
-
+```
 
 7) Смотрим инфу перед созданием mdadm.conf
 [vagrant@otuslinux ~]$ sudo mdadm --detail --scan --verbose
