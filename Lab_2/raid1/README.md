@@ -254,6 +254,7 @@ Installation finished. No error reported.
 ```
 
 **12) Перезагружаемся, выбираем загрузку со второго диска**
+
 **13) Проверяем что теперь загрузились со второго диска**
 ```
 [root@otuslinux vagrant]# cat /proc/mdstat
