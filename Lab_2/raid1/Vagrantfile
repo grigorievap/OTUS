@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
 				needsController = false
 				boxconfig[:disks].each do |dname, dconf|
 					unless File.exist?(dconf[:dfile])
-						# Убираем динамический диск
+						# Убираем статический диск
 						#vb.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
 						vb.customize ['createhd', '--filename', dconf[:dfile], '--size', dconf[:size]]
 						needsController =  true
