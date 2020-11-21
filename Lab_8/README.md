@@ -18,7 +18,6 @@
 
 
 **1) Смотрим наши диски**
-
 ```
 [vagrant@zfs ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
@@ -50,7 +49,6 @@ zfs-kmod-0.8.5-1
 ```
 
 **3) Создаем и проверям пул**
-
 ```
 [vagrant@zfs ~]$ sudo zpool create zfspool raidz1 /dev/sd[b-e]
 
@@ -58,8 +56,7 @@ zfs-kmod-0.8.5-1
 NAME      SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
 zfspool  1.88G   197K  1.87G        -         -     0%     0%  1.00x    ONLINE  -
 
-**[vagrant@zfs ~]$ lsblk**
-
+[vagrant@zfs ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0   40G  0 disk
 └─sda1   8:1    0   40G  0 part /
