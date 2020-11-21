@@ -12,11 +12,12 @@
 Решение:
 ---
 
-### https://zfsonlinux.org/ ###
-### https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL%20and%20CentOS.html ###
+
+https://zfsonlinux.org/ 
+https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL%20and%20CentOS.html 
 
 
-
+# Определить алгоритм с наилучшим сжатием #
 **1) Смотрим наши диски**
 ```
 [vagrant@zfs ~]$ lsblk
@@ -31,7 +32,7 @@ sde      8:64   0  512M  0 disk
 
 **2) Устанавливаем ZFS**
 ```
-[vagrant@zfs ~]$ sudo yum install -y yum-utils
+[vagrant@zfs ~]$ sudo yum install -y yum-utils,wget
 # Проверим нашу версию линуха (не ядро) чтоб скачать нужный пакет ZFS
 [vagrant@zfs ~]$ cat /etc/*release
 [vagrant@zfs ~]$ sudo yum -y install http://download.zfsonlinux.org/epel/zfs-release.el7_8.noarch.rpm
@@ -101,6 +102,99 @@ zfspool         1.3G  128K  1.3G   1% /zfspool
 ```
 
 **4) **
+
+[vagrant@zfs ~]$ sudo zfs create zfspool/fs01
+[vagrant@zfs ~]$ sudo zfs create zfspool/fs02
+[vagrant@zfs ~]$ sudo zfs create zfspool/fs03
+[vagrant@zfs ~]$ sudo zfs create zfspool/fs04
+
+[vagrant@zfs ~]$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        912M     0  912M   0% /dev
+tmpfs           919M     0  919M   0% /dev/shm
+tmpfs           919M  8.5M  911M   1% /run
+tmpfs           919M     0  919M   0% /sys/fs/cgroup
+/dev/sda1        40G  3.2G   37G   8% /
+tmpfs           184M     0  184M   0% /run/user/1000
+zfspool         1.3G  128K  1.3G   1% /zfspool
+zfspool/fs01    1.3G  128K  1.3G   1% /zfspool/fs01
+zfspool/fs02    1.3G  128K  1.3G   1% /zfspool/fs02
+zfspool/fs03    1.3G  128K  1.3G   1% /zfspool/fs03
+zfspool/fs04    1.3G  128K  1.3G   1% /zfspool/fs04
+
+[vagrant@zfs ~]$ zfs list
+NAME           USED  AVAIL     REFER  MOUNTPOINT
+zfspool        275K  1.28G     37.4K  /zfspool
+zfspool/fs01  32.9K  1.28G     32.9K  /zfspool/fs01
+zfspool/fs02  32.9K  1.28G     32.9K  /zfspool/fs02
+zfspool/fs03  32.9K  1.28G     32.9K  /zfspool/fs03
+zfspool/fs04  32.9K  1.28G     32.9K  /zfspool/fs04
+
+[vagrant@zfs ~]$ man zfs get | grep 'compression='
+     deduplication consider using compression=on, as a less resource-intensive alternative.
+                           by running: zfs set compression=on dataset.  The default value is off.
+     compression=on|off|gzip|gzip-N|lz4|lzjb|zle
+       # zfs set compression=off pool/home
+       # zfs set compression=on pool/home/anne
+	   
+[vagrant@zfs ~]$ zfs get compression
+NAME          PROPERTY     VALUE     SOURCE
+zfspool       compression  off       default
+zfspool/fs01  compression  off       default
+zfspool/fs02  compression  off       default
+zfspool/fs03  compression  off       default
+zfspool/fs04  compression  off       default
+
+[vagrant@zfs ~]$ sudo zfs set compression=gzip-9 zfspool/fs01
+[vagrant@zfs ~]$ sudo zfs set compression=lz4 zfspool/fs02
+[vagrant@zfs ~]$ sudo zfs set compression=lzjb zfspool/fs03
+[vagrant@zfs ~]$ sudo zfs set compression=zle zfspool/fs04
+
+[vagrant@zfs ~]$ zfs get compression
+NAME          PROPERTY     VALUE     SOURCE
+zfspool       compression  off       default
+zfspool/fs01  compression  gzip      local
+zfspool/fs02  compression  lz4       local
+zfspool/fs03  compression  lzjb      local
+zfspool/fs04  compression  zle       local
+
+
+[vagrant@zfs ~]$ wget -O War_and_Peace.txt http://www.gutenberg.org/ebooks/2600.txt.utf-8
+
+[vagrant@zfs ~]$ sudo cp War_and_Peace.txt /zfspool/fs01
+[vagrant@zfs ~]$ sudo cp War_and_Peace.txt /zfspool/fs02
+[vagrant@zfs ~]$ sudo cp War_and_Peace.txt /zfspool/fs03
+[vagrant@zfs ~]$ sudo cp War_and_Peace.txt /zfspool/fs04
+
+[vagrant@zfs ~]$ zfs get compression
+NAME          PROPERTY     VALUE     SOURCE
+zfspool       compression  off       default
+zfspool/fs01  compression  gzip-9    local
+zfspool/fs02  compression  lz4       local
+zfspool/fs03  compression  lzjb      local
+zfspool/fs04  compression  zle       local
+
+[vagrant@zfs ~]$ zfs get compressratio
+NAME          PROPERTY       VALUE  SOURCE
+zfspool       compressratio  1.08x  -
+zfspool/fs01  compressratio  1.08x  -
+zfspool/fs02  compressratio  1.08x  -
+zfspool/fs03  compressratio  1.07x  -
+zfspool/fs04  compressratio  1.08x  -
+
+[vagrant@zfs ~]$ zfs list
+NAME           USED  AVAIL     REFER  MOUNTPOINT
+zfspool       4.94M  1.27G     37.4K  /zfspool
+zfspool/fs01  1.19M  1.27G     1.19M  /zfspool/fs01
+zfspool/fs02  1.19M  1.27G     1.19M  /zfspool/fs02
+zfspool/fs03  1.20M  1.27G     1.20M  /zfspool/fs03
+zfspool/fs04  1.19M  1.27G     1.19M  /zfspool/fs04
+
+
+
+
+
+
 
 
 
