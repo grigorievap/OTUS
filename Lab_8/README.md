@@ -1,4 +1,4 @@
-#ZFS#
+# ZFS #
 ---
 Задание:
 ---
@@ -17,7 +17,7 @@ https://zfsonlinux.org/
 https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL%20and%20CentOS.html 
 
 
-##0. Установка ZFS##
+## 0. Установка ZFS ##
 
 **1) Устанавливаем ZFS**
 ```
@@ -92,7 +92,7 @@ tmpfs           184M     0  184M   0% /run/user/1000
 zfspool         1.3G  128K  1.3G   1% /zfspool
 ```
 
-**2) Создаем DataSet(ДС) **
+**2) Создаем DataSet(ДС)**
 ```
 [vagrant@zfs ~]$ sudo zfs create zfspool/fs01
 [vagrant@zfs ~]$ sudo zfs create zfspool/fs02
