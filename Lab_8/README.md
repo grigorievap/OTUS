@@ -49,7 +49,8 @@ zfs-0.8.5-1
 zfs-kmod-0.8.5-1
 ```
 
-**3) Создаем и проверям пул **
+**3) Создаем и проверям пул**
+
 ```
 [vagrant@zfs ~]$ sudo zpool create zfspool raidz1 /dev/sd[b-e]
 
