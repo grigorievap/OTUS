@@ -58,7 +58,7 @@ NAME      SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  
 zfspool  1.88G   197K  1.87G        -         -     0%     0%  1.00x    ONLINE  -
 ```
 
-*******[vagrant@zfs ~]$ lsblk ******
+******[vagrant@zfs ~]$ lsblk*****
 
 ```
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
