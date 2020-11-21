@@ -57,9 +57,9 @@ zfs-kmod-0.8.5-1
 [vagrant@zfs ~]$ zpool list
 NAME      SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
 zfspool  1.88G   197K  1.87G        -         -     0%     0%  1.00x    ONLINE  -
-```
+
 **[vagrant@zfs ~]$ lsblk**
-```
+
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0   40G  0 disk
 └─sda1   8:1    0   40G  0 part /
