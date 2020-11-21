@@ -1,4 +1,7 @@
 # ZFS #
+Инфа по ZFS
+- https://zfsonlinux.org/ 
+- https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL%20and%20CentOS.html 
 ---
 Задание:
 ---
@@ -13,13 +16,9 @@
 ---
 
 
-https://zfsonlinux.org/ 
-https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL%20and%20CentOS.html 
-
-
 ## 0. Установка ZFS ##
 
-**1) Устанавливаем ZFS**
+**0.1) Устанавливаем ZFS**
 ```
 [vagrant@zfs ~]$ sudo yum install -y yum-utils,wget
 # Проверим нашу версию линуха (не ядро) чтоб скачать нужный пакет ZFS
@@ -38,9 +37,9 @@ zfs-0.8.5-1
 zfs-kmod-0.8.5-1
 ```
 
-##1. Определить алгоритм с наилучшим сжатием##
+## 1. Определить алгоритм с наилучшим сжатием ##
 
-**1) Создаем и проверям пул**
+**1.1) Создаем и проверям пул**
 ```
 [vagrant@zfs ~]$ sudo zpool create zfspool raidz1 /dev/sd[b-e]
 
@@ -92,7 +91,7 @@ tmpfs           184M     0  184M   0% /run/user/1000
 zfspool         1.3G  128K  1.3G   1% /zfspool
 ```
 
-**2) Создаем DataSet(ДС)**
+**1.2) Создаем DataSet(ДС)**
 ```
 [vagrant@zfs ~]$ sudo zfs create zfspool/fs01
 [vagrant@zfs ~]$ sudo zfs create zfspool/fs02
@@ -122,7 +121,7 @@ zfspool/fs03  32.9K  1.28G     32.9K  /zfspool/fs03
 zfspool/fs04  32.9K  1.28G     32.9K  /zfspool/fs04
 ```
 
-**3) Глянем в ман и посмотрим какие методы сжатия есть, вместо gzip выбирем gzip-9 и остальные**
+**1.3) Глянем в ман и посмотрим какие методы сжатия есть, вместо gzip выбирем gzip-9 и остальные**
 ```
 [vagrant@zfs ~]$ man zfs get | grep 'compression='
      deduplication consider using compression=on, as a less resource-intensive alternative.
@@ -132,7 +131,7 @@ zfspool/fs04  32.9K  1.28G     32.9K  /zfspool/fs04
        # zfs set compression=on pool/home/anne
 ```
 
-**4) Устанавливаем сжатие на наши ДС**
+**1.4) Устанавливаем сжатие на наши ДС**
 ```
 [vagrant@zfs ~]$ zfs get compression
 NAME          PROPERTY     VALUE     SOURCE
@@ -156,7 +155,7 @@ zfspool/fs03  compression  lzjb      local
 zfspool/fs04  compression  zle       local
 ```
 
-**5) Скачиваем файлик и раскидываем его по ДС и смотрим уровень сжатия**
+**1.5) Скачиваем файлик и раскидываем его по ДС и смотрим уровень сжатия**
 ```
 [vagrant@zfs ~]$ wget -O War_and_Peace.txt http://www.gutenberg.org/ebooks/2600.txt.utf-8
 [vagrant@zfs ~]$ sudo cp War_and_Peace.txt /zfspool/fs01
@@ -189,9 +188,9 @@ zfspool/fs03  1.20M  1.27G     1.20M  /zfspool/fs03
 zfspool/fs04  1.19M  1.27G     1.19M  /zfspool/fs04
 ```
 
-##2. Определить настройки pool’a##
+## 2. Определить настройки pool’a ##
 
-**1) Скачиваем экспортированный Poll и распаковываем**
+**2.1) Скачиваем экспортированный Poll и распаковываем**
 ```
 [vagrant@zfs ~]$ wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg' -O zfs_task1.tar.gz
 
@@ -205,7 +204,7 @@ total 8.1M
 filea  fileb
 ```
 
-**2) Импортируем пул и проверяем его**
+**2.2) Импортируем пул и проверяем его**
 ```
 [vagrant@zfs ~]$ sudo zpool import -d zpoolexport/
    pool: otus
@@ -259,7 +258,7 @@ config:
 errors: No known data errors
 ```
 
-**3) Смотрим свойства пула**
+**2.3) Смотрим свойства пула**
 ```
 [vagrant@zfs ~]$ zfs get all otus
 NAME  PROPERTY              VALUE                  SOURCE
@@ -336,14 +335,14 @@ otus  pbkdf2iters           0                      default
 otus  special_small_blocks  0                      default
 ```
 
-##3. Найти сообщение от преподавателей ##
+## 3. Найти сообщение от преподавателей ##
 
-**1) Скачиваем снапшот**
+**3.1) Скачиваем снапшот**
 ```
 [vagrant@zfs ~]$ wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG' -O otus_task2.file
 ```
 
-**2) Добавляем снапшот и восстанавливаем данные из него**
+**3.2) Добавляем снапшот и восстанавливаем данные из него**
 ```
 Файл был получен командой
 zfs send otus/storage@task2 > otus_task2.file
@@ -357,7 +356,7 @@ otus/storage@task2     0B      -     2.83M  -
 [vagrant@zfs ~]$ sudo zfs rollback otus/storage@task2
 ```
 
-**3) Находим сообщение**
+**3.3) Находим сообщение**
 ```
 [vagrant@zfs ~]$ find /otus/ -name secret_message
 /otus/storage/task1/file_mess/secret_message
