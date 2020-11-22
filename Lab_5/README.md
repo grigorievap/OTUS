@@ -1,7 +1,7 @@
 #  Загрузка системы #
 ---
 Инфа по grub:
-- Репозиторий с пропатченым grub: https://yum.rumyantsev.com/centos/7/x86_64/ 
+- Репозиторий с пропатченым grub: [ссылка](https://yum.rumyantsev.com/centos/7/x86_64/ ).
 
 ---
 Задание:
@@ -55,7 +55,6 @@ PV необходимо инициализировать с параметром
 
 
 
-Это простая [ссылка](https://gist.github.com/neretin-trike/) в тексте.
 
 
 
