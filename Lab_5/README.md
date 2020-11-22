@@ -10,6 +10,7 @@
 - Установить систему с LVM, после чего переименовать VG
 - Добавить модуль в initrd
 PV необходимо инициализировать с параметром --bootloaderareasize 1m
+
 Репозиторий с пропатченым grub: https://yum.rumyantsev.com/centos/7/x86_64/.
 
 PV необходимо инициализировать с параметром --bootloaderareasize 1m.
