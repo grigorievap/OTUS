@@ -1,0 +1,90 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+  :lab7 => {
+        :box_name => "centos/7",
+		:net => [],
+		:cpus => 1,
+		:memory => 1024,
+		:forwarded_port => []
+  },
+}
+
+Vagrant.configure("2") do |config|
+    MACHINES.each do |boxname, boxconfig|
+		# Disable audio
+		config.vm.provider "virtualbox" do |vb|
+			vb.customize ["modifyvm", :id, "--audio", "none"]
+		end
+		config.vm.define boxname do |box|
+            box.vm.box = boxconfig[:box_name]
+            box.vm.host_name = boxname.to_s
+            box.vm.provider :virtualbox do |vb|
+                vb.memory = boxconfig[:memory]
+				vb.cpus = boxconfig[:cpus]
+            end
+			if boxconfig.key?(:net)
+				boxconfig[:net].each do |ipconf|
+					box.vm.network "private_network", ipconf
+				end
+			end
+			if boxconfig.key?(:forwarded_port)
+				boxconfig[:forwarded_port].each do |port|
+					box.vm.network "forwarded_port", port
+				end
+			end
+		box.vm.provision "shell", inline: <<-SHELL
+            mkdir -p ~root/.ssh
+            cp ~vagrant/.ssh/auth* ~root/.ssh
+            yum install -y redhat-lsb-core wget rpmdevtools rpm-build createrepo yum-utils
+			# Download Ngins
+			wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.18.0-2.el7.ngx.src.rpm
+			rpm -i nginx-1.18.0-2.el7.ngx.src.rpm
+			# Download OpenSSL
+			wget https://www.openssl.org/source/latest.tar.gz
+			tar -C /root -xvf latest.tar.gz
+			# Install dependence
+			yum-builddep -y /root/rpmbuild/SPECS/nginx.spec
+        SHELL
+        end
+    end
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
