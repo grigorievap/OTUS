@@ -20,7 +20,7 @@ https://www.virtualbox.org/
 
 ---
 
-# **Kernel update (Lab 1)**
+# **I Kernel update (Lab 1)**
 
 ### **1) Запуск**
 
@@ -103,23 +103,23 @@ sudo reboot
 
 ---
 
-# **Packer**
-Теперь необходимо создать свой образ системы, с уже установленым ядром 5й версии. Для это воспользуемся ранее установленной утилитой `packer`. В директории `packer` есть все необходимые настройки и скрипты для создания необходимого образа системы.
+# **II Packer (Lab 1)**
 
-### **packer provision config**
+### **1) packer provision config**
 Файл `centos.json` содержит описание того, как произвольный образ. Полное описание можно найти в документации к `packer`. Обратим внимание на основные секции или ключи.
 
 Создаем переменные (`variables`) с версией и названием нашего проекта (artifact):
 ```
-    "artifact_description": "CentOS 7.8 with kernel 5.x",
-    "artifact_version": "7.8.2003",
+    "artifact_description": "CentOS Stream 8 with kernel 5.x",
+    "artifact_version": "8",
+    "image_name": "centos-8"
 ```
 
 В секции `builders` задаем исходный образ, для создания своего в виде ссылки и контрольной суммы. Параметры подключения к создаваемой виртуальной машине.
 
 ```
-    "iso_url": "https://mirror.yandex.ru/centos/7.8.2003/isos/x86_64/CentOS-7-x86_64-Minimal-2003.iso", 
-    "iso_checksum": "sha256:659691c28a0e672558b003d223f83938f254b39875ee7559d1a4a14c79173193",
+      "iso_url": "https://mirror.yandex.ru/centos/8-stream/isos/x86_64/CentOS-Stream-8-x86_64-20221222-boot.iso", 
+      "iso_checksum": "sha256:70030af1dff1aed857e9a53311b452d330fa82902b3567f6640f119f9fa29e70",
 ```
 В секции `post-processors` указываем имя файла, куда будет сохранен образ, в случае успешной сборки
 
@@ -144,14 +144,23 @@ sudo reboot
     "output": "centos-{{user `artifact_version`}}-kernel-5-x86_64-Minimal.box",
 ```
 
-### **packer build**
+### **2) packer build**
 Для создания образа системы достаточно перейти в директорию `packer` и в ней выполнить команду:
 
 ```
 packer build centos.json
+
+...
+Build 'centos-8' finished after 15 minutes 25 seconds.
+
+==> Wait completed after 15 minutes 25 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> centos-8: 'virtualbox' provider box: centos-8-kernel-5-x86_64-Minimal.box
+...
 ```
 
-Если все в порядке, то, согласно файла `config.json` будет скачан исходный iso-образ CentOS, установлен на виртуальную машину в автоматическом режиме, обновлено ядро и осуществлен экспорт в указанный нами файл. Если не вносилось изменений в предложенные файлы, то в текущей директории мы увидим файл `centos-7.8.2003-kernel-5-x86_64-Minimal.box`. Он и является результатом работы `packer`.
+
 
 ### **vagrant init (тестирование)**
 Проведем тестирование созданного образа. Выполним его импорт в `vagrant`:
