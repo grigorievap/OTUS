@@ -38,7 +38,8 @@
 
       "vboxmanage": [
         [  "modifyvm",  "{{.Name}}",  "--memory",  "8192" ],
-        [  "modifyvm",  "{{.Name}}",  "--cpus",  "4" ]
+        [  "modifyvm",  "{{.Name}}",  "--cpus",  "4" ],
+		[  "modifyvm",  "{{.Name}}",  "--nat-localhostreachable1",  "on"]
       ],
 
       "export_opts":
