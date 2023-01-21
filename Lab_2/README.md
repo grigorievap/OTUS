@@ -24,10 +24,10 @@
 
 **3) Смотри что за диски**
 ```
-[vagrant@otuslinux ~]$ lsblk
+[vagrant@lab2 ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    0   40G  0 disk
-└─sda1   8:1    0   40G  0 part /
+sda      8:0    0   10G  0 disk
+└─sda1   8:1    0   10G  0 part /
 sdb      8:16   0  250M  0 disk
 sdc      8:32   0  250M  0 disk
 sdd      8:48   0  250M  0 disk
@@ -36,7 +36,7 @@ sdf      8:80   0  250M  0 disk
 ```
 **4) Зануляем суперблоки:**
 ```
-[vagrant@otuslinux ~]$ sudo  mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
+[root@lab2 vagrant]# mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
 mdadm: Unrecognised md component device - /dev/sdd
@@ -45,7 +45,7 @@ mdadm: Unrecognised md component device - /dev/sdf
 ```
 **5) Создаем RAID10 с 4 дисками**
 ```
-[vagrant@otuslinux ~]$ sudo mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
+[root@lab2 vagrant]# mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
 mdadm: layout defaults to n2
 mdadm: layout defaults to n2
 mdadm: chunk size defaults to 512K
@@ -56,17 +56,17 @@ mdadm: array /dev/md0 started.
 
 **6) Проверяем собранный RAID**
 ```
-[vagrant@otuslinux ~]$ cat /proc/mdstat
+[root@lab2 vagrant]# cat /proc/mdstat
 Personalities : [raid10]
 md0 : active raid10 sde[3] sdd[2] sdc[1] sdb[0]
       507904 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
 
 unused devices: <none>
 
-[vagrant@otuslinux ~]$ sudo mdadm -D /dev/md0
+[root@lab2 vagrant]# mdadm -D /dev/md0
 /dev/md0:
            Version : 1.2
-     Creation Time : Mon Nov 16 19:16:17 2020
+     Creation Time : Sat Jan 21 20:12:46 2023
         Raid Level : raid10
         Array Size : 507904 (496.00 MiB 520.09 MB)
      Used Dev Size : 253952 (248.00 MiB 260.05 MB)
@@ -74,7 +74,7 @@ unused devices: <none>
      Total Devices : 4
        Persistence : Superblock is persistent
 
-       Update Time : Mon Nov 16 19:16:23 2020
+       Update Time : Sat Jan 21 20:12:49 2023
              State : clean
     Active Devices : 4
    Working Devices : 4
@@ -86,8 +86,8 @@ unused devices: <none>
 
 Consistency Policy : resync
 
-              Name : otuslinux:0  (local to host otuslinux)
-              UUID : b496ec7c:bcb64210:5044661d:4c277083
+              Name : lab2:0  (local to host lab2)
+              UUID : 93ac85c7:f2f423b6:5379a64a:f1712af9
             Events : 17
 
     Number   Major   Minor   RaidDevice State
@@ -99,44 +99,36 @@ Consistency Policy : resync
 
 **7) Смотрим инфу перед созданием mdadm.conf**
 ```
-[vagrant@otuslinux ~]$ sudo mdadm --detail --scan --verbose
-ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=otuslinux:0 UUID=b496ec7c:bcb64210:5044661d:4c277083
+[root@lab2 vagrant]# mdadm --detail --scan --verbose
+ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=lab2:0 UUID=93ac85c7:f2f423b6:5379a64a:f1712af9
    devices=/dev/sdb,/dev/sdc,/dev/sdd,/dev/sde
 ```
 **8) Создаем mdadm.conf**
 ```
-[vagrant@otuslinux ~]$ echo "DEVICE partitions" | sudo tee /etc/mdadm/mdadm.conf
-[vagrant@otuslinux ~]$ sudo mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' | sudo tee -a /etc/mdadm/mdadm.conf
-ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=otuslinux:0 UUID=b496ec7c:bcb64210:5044661d:4c277083
-[vagrant@otuslinux ~]$ cat /etc/mdadm/mdadm.conf
-DEVICE partitions
-ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=otuslinux:0 UUID=b496ec7c:bcb64210:5044661d:4c277083
-[vagrant@otuslinux ~]$
+[root@lab2 ~]# mkdir /etc/mdadm
+[root@lab2 ~]# echo "DEVICE partitions" | tee /etc/mdadm/mdadm.conf
+
+[root@lab2 ~]# mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' | sudo tee -a /etc/mdadm/mdadm.conf
+ARRAY /dev/md0 level=raid10 num-devices=4 metadata=1.2 name=lab2:0 UUID=93ac85c7:f2f423b6:5379a64a:f1712af9
 ```
 **9) Ломаем RAID**
 ```
-[vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --fail /dev/sde
+[root@lab2 ~]# mdadm /dev/md0 --fail /dev/sde
 mdadm: set /dev/sde faulty in /dev/md0
 ```
 **10) Смотрим что получилось**
 ```
-[vagrant@otuslinux ~]$  cat /proc/mdstat
+[root@lab2 ~]# cat /proc/mdstat
 Personalities : [raid10]
 md0 : active raid10 sde[3](F) sdd[2] sdc[1] sdb[0]
       507904 blocks super 1.2 512K chunks 2 near-copies [4/3] [UUU_]
-
 unused devices: <none>
 
-[vagrant@otuslinux ~]$  cat /proc/mdstat
-Personalities : [raid10]
-md0 : active raid10 sde[3](F) sdd[2] sdc[1] sdb[0]
-      507904 blocks super 1.2 512K chunks 2 near-copies [4/3] [UUU_]
 
-unused devices: <none>
-[vagrant@otuslinux ~]$ sudo mdadm -D /dev/md0
+[root@lab2 ~]# mdadm -D /dev/md0
 /dev/md0:
            Version : 1.2
-     Creation Time : Mon Nov 16 19:16:17 2020
+     Creation Time : Sat Jan 21 20:12:46 2023
         Raid Level : raid10
         Array Size : 507904 (496.00 MiB 520.09 MB)
      Used Dev Size : 253952 (248.00 MiB 260.05 MB)
@@ -144,7 +136,7 @@ unused devices: <none>
      Total Devices : 4
        Persistence : Superblock is persistent
 
-       Update Time : Mon Nov 16 21:12:12 2020
+       Update Time : Sat Jan 21 20:42:34 2023
              State : clean, degraded
     Active Devices : 3
    Working Devices : 3
@@ -156,8 +148,8 @@ unused devices: <none>
 
 Consistency Policy : resync
 
-              Name : otuslinux:0  (local to host otuslinux)
-              UUID : b496ec7c:bcb64210:5044661d:4c277083
+              Name : lab2:0  (local to host lab2)
+              UUID : 93ac85c7:f2f423b6:5379a64a:f1712af9
             Events : 19
 
     Number   Major   Minor   RaidDevice State
@@ -170,27 +162,26 @@ Consistency Policy : resync
 ```
 **11) Удаляем диск из массива**
 ```
-[vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --remove /dev/sde
+[root@lab2 ~]# mdadm /dev/md0 --remove /dev/sde
 mdadm: hot removed /dev/sde from /dev/md0
 ```
 **12) Добавляем диск с массив**
 ```
-[vagrant@otuslinux ~]$ sudo mdadm /dev/md0 --add /dev/sde
+[root@lab2 ~]# mdadm /dev/md0 --add /dev/sde
 mdadm: added /dev/sde
 ```
 **13) Проверяем**
 ```
-[vagrant@otuslinux ~]$ cat /proc/mdstat
+[root@lab2 ~]# cat /proc/mdstat
 Personalities : [raid10]
 md0 : active raid10 sde[4] sdd[2] sdc[1] sdb[0]
       507904 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
-
 unused devices: <none>
 
-[vagrant@otuslinux ~]$ sudo mdadm -D /dev/md0
+[root@lab2 ~]# mdadm -D /dev/md0
 /dev/md0:
            Version : 1.2
-     Creation Time : Mon Nov 16 19:16:17 2020
+     Creation Time : Sat Jan 21 20:12:46 2023
         Raid Level : raid10
         Array Size : 507904 (496.00 MiB 520.09 MB)
      Used Dev Size : 253952 (248.00 MiB 260.05 MB)
@@ -198,7 +189,7 @@ unused devices: <none>
      Total Devices : 4
        Persistence : Superblock is persistent
 
-       Update Time : Mon Nov 16 21:16:30 2020
+       Update Time : Sat Jan 21 20:45:01 2023
              State : clean
     Active Devices : 4
    Working Devices : 4
@@ -210,8 +201,8 @@ unused devices: <none>
 
 Consistency Policy : resync
 
-              Name : otuslinux:0  (local to host otuslinux)
-              UUID : b496ec7c:bcb64210:5044661d:4c277083
+              Name : lab2:0  (local to host lab2)
+              UUID : 93ac85c7:f2f423b6:5379a64a:f1712af9
             Events : 39
 
     Number   Major   Minor   RaidDevice State
@@ -222,32 +213,31 @@ Consistency Policy : resync
 ```
 **14) Создаем раздел GPT**
 ```
-[vagrant@otuslinux ~]$ sudo parted -s /dev/md0 mklabel gpt
+[root@lab2 ~]# parted -s /dev/md0 mklabel gpt
 ```
 **15) Создаем партиций**
 ```
-[vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 0% 20%
-[vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 20% 40%
-[vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 40% 60%
-[vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 60% 80%
-[vagrant@otuslinux ~]$ sudo parted /dev/md0 mkpart primary ext4 80% 100%
+[root@lab2 ~]# parted /dev/md0 mkpart primary ext4 0% 20%
+Information: You may need to update /etc/fstab.
+
+[root@lab2 ~]# parted /dev/md0 mkpart primary ext4 20% 40%
+Information: You may need to update /etc/fstab.
+
+[root@lab2 ~]# parted /dev/md0 mkpart primary ext4 40% 60%
+Information: You may need to update /etc/fstab.
+
+[root@lab2 ~]# parted /dev/md0 mkpart primary ext4 60% 80%
+Information: You may need to update /etc/fstab.
+
+[root@lab2 ~]# parted /dev/md0 mkpart primary ext4 80% 100%
+Information: You may need to update /etc/fstab.
 ```
 **16) Создаем ФС на партициях**
 ```
-[vagrant@otuslinux ~]$ for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
-mke2fs 1.42.9 (28-Dec-2013)
-Filesystem label=
-OS type: Linux
-Block size=1024 (log=0)
-Fragment size=1024 (log=0)
-Stride=512 blocks, Stripe width=1024 blocks
-25168 inodes, 100352 blocks
-5017 blocks (5.00%) reserved for the super user
-First data block=1
-Maximum filesystem blocks=33685504
-13 block groups
-8192 blocks per group, 8192 fragments per group
-1936 inodes per group
+[root@lab2 ~]# for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 100352 1k blocks and 25168 inodes
+Filesystem UUID: cada4f8f-d4a3-41a3-9457-26c934701651
 Superblock backups stored on blocks:
         8193, 24577, 40961, 57345, 73729
 
@@ -256,19 +246,9 @@ Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-mke2fs 1.42.9 (28-Dec-2013)
-Filesystem label=
-OS type: Linux
-Block size=1024 (log=0)
-Fragment size=1024 (log=0)
-Stride=512 blocks, Stripe width=1024 blocks
-25376 inodes, 101376 blocks
-5068 blocks (5.00%) reserved for the super user
-First data block=1
-Maximum filesystem blocks=33685504
-13 block groups
-8192 blocks per group, 8192 fragments per group
-1952 inodes per group
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 101376 1k blocks and 25376 inodes
+Filesystem UUID: 0eb6dccf-a04d-4e4a-ab5a-b541193a45b3
 Superblock backups stored on blocks:
         8193, 24577, 40961, 57345, 73729
 
@@ -277,19 +257,9 @@ Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-mke2fs 1.42.9 (28-Dec-2013)
-Filesystem label=
-OS type: Linux
-Block size=1024 (log=0)
-Fragment size=1024 (log=0)
-Stride=512 blocks, Stripe width=1024 blocks
-25688 inodes, 102400 blocks
-5120 blocks (5.00%) reserved for the super user
-First data block=1
-Maximum filesystem blocks=33685504
-13 block groups
-8192 blocks per group, 8192 fragments per group
-1976 inodes per group
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 102400 1k blocks and 25688 inodes
+Filesystem UUID: eb64c6c3-e30e-4838-9d62-f81caf32ae49
 Superblock backups stored on blocks:
         8193, 24577, 40961, 57345, 73729
 
@@ -298,19 +268,9 @@ Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-mke2fs 1.42.9 (28-Dec-2013)
-Filesystem label=
-OS type: Linux
-Block size=1024 (log=0)
-Fragment size=1024 (log=0)
-Stride=512 blocks, Stripe width=1024 blocks
-25376 inodes, 101376 blocks
-5068 blocks (5.00%) reserved for the super user
-First data block=1
-Maximum filesystem blocks=33685504
-13 block groups
-8192 blocks per group, 8192 fragments per group
-1952 inodes per group
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 101376 1k blocks and 25376 inodes
+Filesystem UUID: dc1d31fe-8b16-4e04-a1b5-2e444dfa30f1
 Superblock backups stored on blocks:
         8193, 24577, 40961, 57345, 73729
 
@@ -319,19 +279,9 @@ Writing inode tables: done
 Creating journal (4096 blocks): done
 Writing superblocks and filesystem accounting information: done
 
-mke2fs 1.42.9 (28-Dec-2013)
-Filesystem label=
-OS type: Linux
-Block size=1024 (log=0)
-Fragment size=1024 (log=0)
-Stride=512 blocks, Stripe width=1024 blocks
-25168 inodes, 100352 blocks
-5017 blocks (5.00%) reserved for the super user
-First data block=1
-Maximum filesystem blocks=33685504
-13 block groups
-8192 blocks per group, 8192 fragments per group
-1936 inodes per group
+mke2fs 1.45.6 (20-Mar-2020)
+Creating filesystem with 100352 1k blocks and 25168 inodes
+Filesystem UUID: af3e43f9-5ac1-431d-90de-e600829cbb39
 Superblock backups stored on blocks:
         8193, 24577, 40961, 57345, 73729
 
@@ -342,21 +292,17 @@ Writing superblocks and filesystem accounting information: done
 ```
 **17) Создаем каталоги, куда смонтируются разделы**
 ```
-[vagrant@otuslinux ~]$ sudo mkdir -p /raid/part{1,2,3,4,5}
-[vagrant@otuslinux ~]$ ls /raid/
+[root@lab2 ~]# mkdir -p /raid/part{1,2,3,4,5}
+[root@lab2 ~]# ls /raid/
 part1  part2  part3  part4  part5
 ```
 **18) Монтируем и проверяем**
 ```
-[vagrant@otuslinux ~]$ sudo -s
-[root@otuslinux vagrant]#
-[root@otuslinux vagrant]# for i in $(seq 1 5); do mount /dev/md0p$i /raid/part$i; done
-[root@otuslinux vagrant]# exit
-exit
-[vagrant@otuslinux ~]$ lsblk
+[root@lab2 ~]# for i in $(seq 1 5); do mount /dev/md0p$i /raid/part$i; done
+[root@lab2 ~]# lsblk
 NAME      MAJ:MIN RM  SIZE RO TYPE   MOUNTPOINT
-sda         8:0    0   40G  0 disk
-└─sda1      8:1    0   40G  0 part   /
+sda         8:0    0   10G  0 disk
+└─sda1      8:1    0   10G  0 part   /
 sdb         8:16   0  250M  0 disk
 └─md0       9:0    0  496M  0 raid10
   ├─md0p1 259:0    0   98M  0 md     /raid/part1
@@ -410,5 +356,3 @@ box.vm.provision "shell", inline: <<-SHELL
 	for i in $(seq 1 5); do  mount /dev/md0p$i /raid/part$i; done
 SHELL
 ```
-
-
