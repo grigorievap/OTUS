@@ -25,6 +25,7 @@
         "<tab>inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
       ],
 
+
       "shutdown_command": "sudo -S /sbin/halt -h -p",
       "shutdown_timeout" : "5m",
 
