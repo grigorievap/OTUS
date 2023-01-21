@@ -2,83 +2,91 @@
 # vim: set ft=ruby :
 
 MACHINES = {
-  # VM name "kernel update"
-  :"kernel-update" => {
-              # VM box
-              :box_name => "centos/stream8",
-              # VM CPU count
-              :cpus => 2,
-              # VM RAM size (Mb)
-              :memory => 1024,
-              # networks
-              :net => [],
-			  :disks => {
-			    :sata1 => {
-			      :dfile => './sata1.vdi',
-			      :size => 250,
-			      :port => 1
-			    },
-				:sata2 => {
-				  :dfile => './sata2.vdi',
-				  :size => 250, # Megabytes
-				  :port => 2
-			    }
-			  },
-              # forwarded ports
-              #:forwarded_port => []
-            }
+	:otuslinux => {
+		:box_name => "centos/stream8",
+		#:ip_addr => '192.168.11.101',
+		:net => [],
+		:cpus => 1,
+		:memory => 1024,
+		:disks => {
+			:sata1 => {
+				:dfile => './sata1.vdi',
+				:size => 250,
+				:port => 1
+			},
+			:sata2 => {
+				:dfile => './sata2.vdi',
+				:size => 250, # Megabytes
+				:port => 2
+			},
+			:sata3 => {
+				:dfile => './sata3.vdi',
+				:size => 250,
+				:port => 3
+			},
+			:sata4 => {
+				:dfile => './sata4.vdi',
+				:size => 250, # Megabytes
+				:port => 4
+			},
+			:sata5 => {
+				:dfile => './sata5.vdi',
+				:size => 250, # Megabytes
+				:port => 5
+			}
+		}
+	},
 }
 
 Vagrant.configure("2") do |config|
-  MACHINES.each do |boxname, boxconfig|
-    # Disable shared folders
-    # config.vm.synced_folder ".", "/vagrant", disabled: true
-    #config.vm.synced_folder ".", "/vagrant", type: "smb"
-	# Apply VM config
-    config.vm.define boxname do |box|
-      # Set VM base box and hostname
-      box.vm.box = boxconfig[:box_name]
-      box.vm.host_name = boxname.to_s
-      # Additional network config if present
-      #if boxconfig.key?(:net)
-      #  boxconfig[:net].each do |ipconf|
-      #    box.vm.network "private_network", ipconf
-      #  end
-      #end
-      # Port-forward config if present
-      #if boxconfig.key?(:forwarded_port)
-      #  boxconfig[:forwarded_port].each do |port|
-      #    box.vm.network "forwarded_port", port
-      #  end
-      #end
-      # VM resources config
-      box.vm.provider "virtualbox" do |v|
-        
-		
-		
-		# Display the VirtualBox GUI when booting the machine
-        v.gui = true
-
-		
-		
-		# Set VM RAM size and CPU count
-        v.memory = boxconfig[:memory]
-        v.cpus = boxconfig[:cpus]
-		
-		needsController = false
-		boxconfig[:disks].each do |dname, dconf|
-		  unless File.exist?(dconf[:dfile])
-		    v.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
-		    needsController =  true
-		  end
+	MACHINES.each do |boxname, boxconfig|
+		config.vm.define boxname do |box|
+			box.vm.box = boxconfig[:box_name]
+			box.vm.host_name = boxname.to_s
+			#box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
+			#box.vm.network "private_network", ip: boxconfig[:ip_addr]
+			if boxconfig.key?(:forwarded_port)
+				boxconfig[:forwarded_port].each do |port|
+					box.vm.network "forwarded_port", port
+				end
+			end
+			box.vm.provider :virtualbox do |vb|
+				vb.memory = boxconfig[:memory]
+				vb.cpus = boxconfig[:cpus]
+				needsController = false
+				boxconfig[:disks].each do |dname, dconf|
+					unless File.exist?(dconf[:dfile])
+						vb.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
+						needsController =  true
+					end
+				end
+				if needsController == true
+					vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+					boxconfig[:disks].each do |dname, dconf|
+						vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', dconf[:port], '--device', 0, '--type', 'hdd', '--medium', dconf[:dfile]]
+					end
+				end
+			end
+			box.vm.provision "shell", inline: <<-SHELL
+				mkdir -p ~root/.ssh
+				cp ~vagrant/.ssh/auth* ~root/.ssh
+				yum install -y mdadm smartmontools hdparm gdisk
+				# Script for RAID
+				mdadm --zero-superblock --force /dev/sd{b,c,d,e,f}
+				mdadm --create --verbose /dev/md0 -l 10 -n 4 /dev/sd{b,c,d,e}
+				mkdir -pm 700 /etc/mdadm
+				echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
+				mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
+				parted -s /dev/md0 mklabel gpt
+				parted /dev/md0 mkpart primary ext4 0% 20%
+				parted /dev/md0 mkpart primary ext4 20% 40%
+				parted /dev/md0 mkpart primary ext4 40% 80%
+				parted /dev/md0 mkpart primary ext4 80% 90%
+				parted /dev/md0 mkpart primary ext4 90% 100%
+				for i in $(seq 1 5); do mkfs.ext4 /dev/md0p$i; done
+				mkdir -p /raid/part{1,2,3,4,5}
+				for i in $(seq 1 5); do  mount /dev/md0p$i /raid/part$i; done
+			SHELL
 		end
-		if needsController == true
-		  v.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
-		  boxconfig[:disks].each do |dname, dconf|
-		  v.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', dconf[:port], '--device', 0, '--type', 'hdd', '--medium', dconf[:dfile]]
-		  end
-		end
-      end
-    end
-  end
+	end
 end
