@@ -94,7 +94,7 @@ sudo reboot
 
 ---
 
-# **II Packer **
+# ** II Packer **
 
 ### **1) packer provision config**
 Файл `centos.json` содержит описание того, как произвольный образ. Полное описание можно найти в документации к `packer`. Обратим внимание на основные секции или ключи.
@@ -202,7 +202,7 @@ vagrant ssh
 vagrant box remove centos8-kernel5
 ```
 ---
-# **III Packer **
+# ** III Cloud **
 
 
 Поделимся полученным образом с сообществом. Для этого зальем его в Vagrant Cloud. Можно залить через web-интерфейс, но так же `vagrant` позволяет это проделать через CLI.
