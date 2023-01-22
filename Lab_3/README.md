@@ -1,5 +1,5 @@
-# Работа с LVM
-# На имеющемся образе /dev/mapper/VolGroup00-LogVol00 38G 738M 37G 2% /
+## Работа с LVM
+## На имеющемся образе /dev/mapper/VolGroup00-LogVol00 38G 738M 37G 2% /
 
 ---
 Задание:
