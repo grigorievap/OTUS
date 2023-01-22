@@ -1,12 +1,12 @@
 # **Course Homework - Linux Administrator. Professional**
 
 
-| ПО         | Версия | 
-| ---        | ---    | 
-| Windows    | 11     | 
-| Vagrant    | 2.3.4  | 
-| Packer     | 1.8.5  | 
-| VirtualBox | 7.0.4  | 
+| ПО         | Версия | Сылка на дистрибутив                     | 
+| ---        | ---    |---                                       | 
+| Windows    | 11     | https://www.microsoft.com/software-download/windows11 | 
+| Vagrant    | 2.3.4  | https://www.vagrantup.com/downloads.html | 
+| Packer     | 1.8.5  | https://www.packer.io/downloads.html     | 
+| VirtualBox | 7.0.4  | https://www.virtualbox.org/              | 
 
 ---
 **Добавлена 1 лаба**

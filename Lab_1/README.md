@@ -6,18 +6,6 @@ Lab_1 - базовая часть
 packer\core - ядро из исходников + shared folder works
 ```
 
-# **Установка ПО (Windows 11)**
-
-### **Vagrant**
-https://www.vagrantup.com/downloads.html
-
-### **Packer**
-https://www.packer.io/downloads.html
-
-### **VirtualBox**
-https://www.virtualbox.org/
-
-
 ---
 
 # **I Kernel update (Lab 1)**
