@@ -1,6 +1,4 @@
-# **Labs**
-
-Лабы делаются на ПО:
+# **Labs - Administrator Linux. Professional**
 
 | ПО         | Версия | 
 | ---        | ---    | 
