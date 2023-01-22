@@ -21,7 +21,7 @@
 
 **2) vagrant ssh**
 
-**3) Смотри что за диски**
+**3) Смотрим что за диски**
 ```
 [vagrant@lab2 ~]$ lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
