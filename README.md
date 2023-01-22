@@ -32,7 +32,7 @@
 **Добавлена 3 лаба**
 - Домашнее задание: Работа с LVM
 
-Решение: [2 лаба](https://github.com/grigorievap/OTUS/tree/main/Lab_3)
+Решение: [3 лаба](https://github.com/grigorievap/OTUS/tree/main/Lab_3)
 
 1. [ ] Основное ДЗ
    1. [ ] ДЗ со *
