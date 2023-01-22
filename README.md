@@ -1,7 +1,8 @@
-# **Labs - Administrator Linux. Professional**
+# **Course Homework - Linux Administrator. Professional**
+
 
 | ПО         | Версия | 
-| ---        | ---    | 
+| --- ---       | ------    | 
 | Windows    | 11     | 
 | Vagrant    | 2.3.4  | 
 | Packer     | 1.8.5  | 
