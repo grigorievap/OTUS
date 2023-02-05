@@ -20,7 +20,7 @@
 ## Настраиваем сервер NFS ##
 
 
-**1. В Terminal (pwsh7) необходимо ввести команду, чтоб не ругался на права:**
+1. В Terminal (pwsh7) необходимо ввести команду, чтоб не ругался на права:
 ```
 $Env:VAGRANT_PREFER_SYSTEM_BIN += 0
 ```
@@ -113,7 +113,7 @@ udp6       0      0 :::111                  :::*                                
 [root@nfss vagrant]# chmod 0777 /srv/share/upload
 ``` 
 
-**1. Создаём в файле "/etc/exports" структуру, которая позволит экспортировать ранее созданную директорию**
+**1. Создаём в файле __/etc/exports__ структуру, которая позволит экспортировать ранее созданную директорию**
 ``` 
 [root@nfss vagrant]# cat << EOF > /etc/exports
 > /srv/share 192.168.50.11/32(rw,sync,root_squash)
@@ -154,7 +154,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.servi
 [root@nfsc vagrant]# systemctl status firewalld 
 ``` 
 
-**1. Добавляем в __/etc/fstab__ строку **
+**1. Добавляем в __/etc/fstab__ строку**
 ``` 
 [root@nfsc vagrant]# echo "192.168.50.10:/srv/share/ /mnt nfs vers=3,proto=udp,noauto,x-systemd.automount 0 0" >> /etc/fstab
 [root@nfsc vagrant]# systemctl daemon-reload
