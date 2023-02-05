@@ -20,36 +20,36 @@
 ## Настраиваем сервер NFS ##
 
 
-1. В Terminal (pwsh7) необходимо ввести команду, чтоб не ругался на права:
+- В Terminal (pwsh7) необходимо ввести команду, чтоб не ругался на права:
 ```
 $Env:VAGRANT_PREFER_SYSTEM_BIN += 0
 ```
 
-1. Vagrant file
+- Vagrant file
 [Vagrant file](https://github.com/grigorievap/OTUS/tree/main/Lab_5/Vagrantfile)
 
 ```
 vagrant up
 ```
 
-1. Заходим на сервер
+- Заходим на сервер
 ``` 
 vagrant ssh nfss 
 ``` 
 
-1. Доустанавливаем утилиты
+- Доустанавливаем утилиты
 ```
 [root@nfss vagrant]# yum install nfs-utils 
 ``` 
 
-1. Включаем firewall и проверяем, что он работает
+- Включаем firewall и проверяем, что он работает
 ``` 
 [root@nfss vagrant]# systemctl enable firewalld --now
 Created symlink from /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service to /usr/lib/systemd/system/firewalld.service.
 Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.service to /usr/lib/systemd/system/firewalld.service.
 ``` 
 
-1. Разрешаем в firewall доступ к сервисам NFS
+- Разрешаем в firewall доступ к сервисам NFS
 ``` 
 [root@nfss vagrant]# firewall-cmd --add-service="nfs3" \
 > --add-service="rpc-bind" \
@@ -61,13 +61,13 @@ success
 success
 ``` 
 
-**1. Включаем сервер NFS (для конфигурации NFSv3 over UDP он не требует дополнительной настройки, однако вы можете ознакомиться с умолчаниями в файле __/etc/nfs.conf__)**
+- 1. Включаем сервер NFS (для конфигурации NFSv3 over UDP он не требует дополнительной настройки, однако вы можете ознакомиться с умолчаниями в файле __/etc/nfs.conf__)
 ``` 
 [root@nfss vagrant]# systemctl enable nfs --now
 Created symlink from /etc/systemd/system/multi-user.target.wants/nfs-server.service to /usr/lib/systemd/system/nfs-server.service.
 ``` 
 
-**1. Проверяем наличие слушаемых портов 2049/udp, 2049/tcp, 20048/udp,  20048/tcp, 111/udp, 111/tcp (не все они будут использоваться далее,  но их наличие сигнализирует о том, что необходимые сервисы готовы принимать внешние подключения)**
+- Проверяем наличие слушаемых портов 2049/udp, 2049/tcp, 20048/udp,  20048/tcp, 111/udp, 111/tcp (не все они будут использоваться далее,  но их наличие сигнализирует о том, что необходимые сервисы готовы принимать внешние подключения)
 ``` 
 [root@nfss vagrant]# yum install net-tools
 
@@ -106,26 +106,26 @@ udp6       0      0 :::20048                :::*                                
 udp6       0      0 :::111                  :::*                                343/rpcbind
 ``` 
 
-**1. Создаём и настраиваем директорию, которая будет экспортирована в будущем**
+- Создаём и настраиваем директорию, которая будет экспортирована в будущем
 ``` 
 [root@nfss vagrant]# mkdir -p /srv/share/upload
 [root@nfss vagrant]# chown -R nfsnobody:nfsnobody /srv/share
 [root@nfss vagrant]# chmod 0777 /srv/share/upload
 ``` 
 
-**1. Создаём в файле __/etc/exports__ структуру, которая позволит экспортировать ранее созданную директорию**
+- Создаём в файле __/etc/exports__ структуру, которая позволит экспортировать ранее созданную директорию
 ``` 
 [root@nfss vagrant]# cat << EOF > /etc/exports
 > /srv/share 192.168.50.11/32(rw,sync,root_squash)
 > EOF
 ``` 
 
-**1. Экспортируем ранее созданную директорию**
+- Экспортируем ранее созданную директорию
 ``` 
 [root@nfss vagrant]# exportfs -r 
 ``` 
 
-**1. Проверяем экспортированную директорию следующей командой**
+- Проверяем экспортированную директорию следующей командой
 ``` 
 [root@nfss vagrant]# exportfs -s
 /srv/share  192.168.50.11/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
@@ -135,17 +135,17 @@ udp6       0      0 :::111                  :::*                                
 ## Настраиваем клиент NFS ##
 
 
-**1. Заходим на сервер**
+- Заходим на сервер
 ``` 
 vagrant ssh nfsc 
 ``` 
 
-**1. Доустановим вспомогательные утилиты**
+- Доустановим вспомогательные утилиты
 ``` 
 [root@nfsc vagrant]# yum install nfs-utils 
 ``` 
 
-**1. Включаем firewall и проверяем, что он работает**
+- Включаем firewall и проверяем, что он работает
  ``` 
 [root@nfsc vagrant]# systemctl enable firewalld --now
 Created symlink from /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service to /usr/lib/systemd/system/firewalld.service.
@@ -154,7 +154,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.servi
 [root@nfsc vagrant]# systemctl status firewalld 
 ``` 
 
-**1. Добавляем в __/etc/fstab__ строку**
+- Добавляем в __/etc/fstab__ строку
 ``` 
 [root@nfsc vagrant]# echo "192.168.50.10:/srv/share/ /mnt nfs vers=3,proto=udp,noauto,x-systemd.automount 0 0" >> /etc/fstab
 [root@nfsc vagrant]# systemctl daemon-reload
@@ -164,7 +164,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.servi
 Отметим, что в данном случае происходит автоматическая генерация systemd units в каталоге `/run/systemd/generator/`, которые производят монтирование при первом обращении к каталогу `/mnt/` 
 
 
-**1. Заходим в директорию `/mnt/` и проверяем успешность монтирования**
+- Заходим в директорию `/mnt/` и проверяем успешность монтирования
 ```
 [root@nfsc vagrant]# cd /mnt
 
