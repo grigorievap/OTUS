@@ -154,7 +154,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.servi
 [root@nfsc vagrant]# systemctl status firewalld 
 ``` 
 
-**1. Добавляем в "/etc/fstab" строку **
+**1. Добавляем в __/etc/fstab__ строку **
 ``` 
 [root@nfsc vagrant]# echo "192.168.50.10:/srv/share/ /mnt nfs vers=3,proto=udp,noauto,x-systemd.automount 0 0" >> /etc/fstab
 [root@nfsc vagrant]# systemctl daemon-reload
