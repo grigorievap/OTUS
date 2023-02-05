@@ -25,31 +25,31 @@
 $Env:VAGRANT_PREFER_SYSTEM_BIN += 0
 ```
 
-**1. Vagrant file**
+1. Vagrant file
 [Vagrant file](https://github.com/grigorievap/OTUS/tree/main/Lab_5/Vagrantfile)
 
 ```
 vagrant up
 ```
 
-**1. Заходим на сервер**
+1. Заходим на сервер
 ``` 
 vagrant ssh nfss 
 ``` 
 
-**1. Доустанавливаем утилиты**
+1. Доустанавливаем утилиты
 ```
 [root@nfss vagrant]# yum install nfs-utils 
 ``` 
 
-**1. Включаем firewall и проверяем, что он работает**
+1. Включаем firewall и проверяем, что он работает
 ``` 
 [root@nfss vagrant]# systemctl enable firewalld --now
 Created symlink from /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service to /usr/lib/systemd/system/firewalld.service.
 Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.service to /usr/lib/systemd/system/firewalld.service.
 ``` 
 
-**1. Разрешаем в firewall доступ к сервисам NFS**
+1. Разрешаем в firewall доступ к сервисам NFS
 ``` 
 [root@nfss vagrant]# firewall-cmd --add-service="nfs3" \
 > --add-service="rpc-bind" \
