@@ -323,7 +323,7 @@ total 0
 
 - [Vagrant файл](https://github.com/grigorievap/OTUS/tree/main/Lab_5/auto/Vagrantfile)
 - [Скрипт для сервера](https://github.com/grigorievap/OTUS/tree/main/Lab_5/auto/nfss_script.sh)
-- [Скрипт для клиента](https://github.com/grigorievap/OTUS/tree/main/Lab_5/auto/nfsс_script.sh)
+- [Скрипт для клиента](https://github.com/grigorievap/OTUS/tree/main/Lab_5/auto/nfsc_script.sh)
 
 
 
