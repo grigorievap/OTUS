@@ -178,52 +178,145 @@ systemd-1 on /mnt type autofs (rw,relatime,fd=46,pgrp=1,timeout=0,minproto=5,max
 
 ## Проверка работоспособности ##
 
-- заходим на сервер
-- заходим в каталог 
+- Заходим на сервер и переходим в каталог
 ```
 [root@nfss vagrant]# cd /srv/share/upload
 ```
-- создаём тестовый файл
+
+- Создаём тестовый файл
 ```
 [root@nfss upload]# touch check_file
 [root@nfss upload]# ll
 total 0
 -rw-r--r--. 1 root root 0 Feb  5 23:28 check_file
 ```
-- заходим на клиент
-- заходим в каталог `/mnt/upload`
-- проверяем наличие ранее созданного файла
-- создаём тестовый файл `touch client_file`
-- проверяем, что файл успешно создан
 
-Предварительно проверяем клиент:
-- перезагружаем клиент
-- заходим на клиент
-- заходим в каталог `/mnt/upload`
-- проверяем наличие ранее созданных файлов
+- Заходим на клиент и переходим в каталог
+```
+[root@nfsc mnt]# cd /mnt/upload
+[root@nfsc upload]# ll
+total 0
+-rw-r--r--. 1 root root 0 Feb  5 23:28 check_file
+```
+- Создаём тестовый файл 
+```
+[root@nfsc upload]# touch client_file
+[root@nfsc upload]# ll
+total 0
+-rw-r--r--. 1 root      root      0 Feb  5 23:28 check_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  5 23:41 client_file
+```
 
-Проверяем сервер:
-- заходим на сервер в отдельном окне терминала
-- перезагружаем сервер
-- заходим на сервер
-- проверяем наличие файлов в каталоге `/srv/share/upload/`
-- проверяем статус сервера NFS `systemctl status nfs`
-- проверяем статус firewall `systemctl status firewalld`
-- проверяем экспорты `exportfs -s`
-- проверяем работу RPC `showmount -a 192.168.50.10`
+- Проверяем клиент:
+- Перезагружаем клиент
+```
+[root@nfsc upload]# reboot
+Connection to 127.0.0.1 closed by remote host.
+```
 
-Проверяем клиент:
-- возвращаемся на клиент
-- перезагружаем клиент
-- заходим на клиент
-- проверяем работу RPC `showmount -a 192.168.50.10`
-- заходим в каталог `/mnt/upload`
-- проверяем статус монтирования `mount | grep mnt`
-- проверяем наличие ранее созданных файлов
-- создаём тестовый файл `touch final_check`
-- проверяем, что файл успешно создан
+- Заходим на клиент, переходим в каталог и проверяем файлы
+```
+[root@nfsc vagrant]# cd /mnt/upload
+[root@nfsc upload]# ll
+total 0
+-rw-r--r--. 1 root      root      0 Feb  5 23:28 check_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  5 23:41 client_file
+```
 
-Если вышеуказанные проверки прошли успешно, это значит, что демонстрационный стенд работоспособен и готов к работе.
+- Проверяем сервер:
+- Перезагружаем сервер
+```
+[root@nfss upload]# reboot
+```
+
+- Заходим на сервер
+- Проверяем наличие файлов в каталоге 
+```
+[root@nfss vagrant]# ll /srv/share/upload/
+total 0
+-rw-r--r--. 1 root      root      0 Feb  5 23:28 check_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  5 23:41 client_file
+```
+
+- Проверяем статус сервера NFS 
+```
+[root@nfss vagrant]# systemctl status nfs
+● nfs-server.service - NFS server and services
+   Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+  Drop-In: /run/systemd/generator/nfs-server.service.d
+           └─order-with-mounts.conf
+   Active: active (exited) since Sun 2023-02-05 23:56:33 UTC; 3min 29s ago
+```
+
+- Проверяем статус firewall 
+```
+[root@nfss vagrant]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Sun 2023-02-05 23:56:29 UTC; 3min 59s ago
+     Docs: man:firewalld(1)
+ Main PID: 409 (firewalld)
+   CGroup: /system.slice/firewalld.service
+           └─409 /usr/bin/python2 -Es /usr/sbin/firewalld --nofork --nopid
+
+Feb 05 23:56:27 nfss systemd[1]: Starting firewalld - dynamic firewall daemon...
+Feb 05 23:56:29 nfss systemd[1]: Started firewalld - dynamic firewall daemon.
+Feb 05 23:56:29 nfss firewalld[409]: WARNING: AllowZoneDrifting is enabled. This is considered ...now.
+Hint: Some lines were ellipsized, use -l to show in full.
+```
+
+- Проверяем экспорты 
+```
+[root@nfss vagrant]# exportfs -s
+/srv/share  192.168.50.11/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+```
+
+- Проверяем работу RPC 
+```
+[root@nfss vagrant]# showmount -a 192.168.50.10
+All mount points on 192.168.50.10:
+192.168.50.11:/srv/share
+```
+
+- Проверяем клиент:
+- Возвращаемся на клиент
+- Перезагружаем клиент
+- Заходим на клиент
+- Проверяем работу RPC 
+```
+[root@nfsc vagrant]# cd /mnt/upload
+[root@nfsc mnt]# showmount -a 192.168.50.10
+All mount points on 192.168.50.10:
+192.168.50.11:/srv/share
+```
+
+- Проверяем статус монтирования 
+```
+[root@nfsc upload]# mount | grep mnt
+systemd-1 on /mnt type autofs (rw,relatime,fd=23,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=10902)
+192.168.50.10:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=32768,wsize=32768,namlen=255,hard,proto=udp,timeo=11,retrans=3,sec=sys,mountaddr=192.168.50.10,mountvers=3,mountport=20048,mountproto=udp,local_lock=none,addr=192.168.50.10)
+
+[root@nfsc upload]# ll
+total 0
+-rw-r--r--. 1 root      root      0 Feb  5 23:28 check_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  5 23:41 client_file
+```
+
+- Создаём тестовый файл 
+```
+[root@nfsc upload]# touch final_check
+```
+
+- Проверяем, что файл успешно создан
+```
+[root@nfsc upload]# ll
+total 0
+-rw-r--r--. 1 root      root      0 Feb  5 23:28 check_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  5 23:41 client_file
+-rw-r--r--. 1 nfsnobody nfsnobody 0 Feb  6 00:13 final_check
+```
+
+##Проверка прошла,стенд работоспособен и готов к работе.##
 
 
 
