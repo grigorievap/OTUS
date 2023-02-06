@@ -51,7 +51,7 @@
 
 Решение: [5 лаба](https://github.com/grigorievap/OTUS/tree/main/Lab_5)
 
-1. [ ] Основное ДЗ
+1. [x] Основное ДЗ
    1. [ ] ДЗ со *
 ---
 
