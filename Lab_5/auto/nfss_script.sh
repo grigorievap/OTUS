@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+
 sudo yum install nfs-utils
 sudo systemctl enable firewalld --now
 sudo firewall-cmd --add-service="nfs3" --add-service="rpc-bind" --add-service="mountd" --permanent
