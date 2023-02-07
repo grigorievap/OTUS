@@ -32,7 +32,7 @@
 [root@lvm vagrant]# yum install xfsdump
 ```
 
-- Создаем временный том
+- Создаем временный том:
 ```
 [root@lvm vagrant]# pvcreate /dev/sdb
   Physical volume "/dev/sdb" successfully created.
@@ -44,7 +44,7 @@
   Logical volume "lv_root" created.
 ```
 
-- Создаем ФС и монтируем ее
+- Создаем ФС и монтируем ее:
 ```
 [root@lvm vagrant]# mkfs.xfs /dev/vg_root/lv_root
 meta-data=/dev/vg_root/lv_root   isize=512    agcount=4, agsize=655104 blks
@@ -60,7 +60,7 @@ realtime =none                   extsz=4096   blocks=0, rtextents=0
 [root@lvm vagrant]# mount /dev/vg_root/lv_root /mnt
 ```
 
-- Копируем все данные с __/__ в __/mnt__ 
+- Копируем все данные с __/__ в __/mnt__:
 ```
 [root@lvm vagrant]# xfsdump -J - /dev/VolGroup00/LogVol00 | xfsrestore -J - /mnt
 xfsrestore: restore complete: 13 seconds elapsed
@@ -78,7 +78,7 @@ Found initrd image: /boot/initramfs-3.10.0-862.2.3.el7.x86_64.img
 done
 ```
 
-- Обновляем образ initrd
+- Обновляем образ initrd:
 ```
 [root@lvm boot]# cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;
 s/.img//g"` --force; done
@@ -106,7 +106,7 @@ sdd                       8:48   0    1G  0 disk
 sde                       8:64   0    1G  0 disk
 ```
 
-- Удаяем старый LV и создаем новый
+- Удаяем старый LV и создаем новый:
 ```
 [root@lvm vagrant]# lvremove /dev/VolGroup00/LogVol00
 Do you really want to remove active logical volume VolGroup00/LogVol00? [y/n]: y
@@ -118,7 +118,7 @@ WARNING: xfs signature detected on /dev/VolGroup00/LogVol00 at offset 0. Wipe it
   Logical volume "LogVol00" created.
 ```
 
-- Проделываем теже операции,за исключением правки __/etc/grub2/grub.cfg__
+- Проделываем теже операции,за исключением правки __/etc/grub2/grub.cfg__:
 ```
 [root@lvm vagrant]# mkfs.xfs /dev/VolGroup00/LogVol00
 meta-data=/dev/VolGroup00/LogVol00 isize=512    agcount=4, agsize=524288 blks
@@ -233,7 +233,7 @@ sdd                        8:48   0    1G  0 disk
 sde                        8:64   0    1G  0 disk
 ```
 
-- Удаляем временную VG
+- Удаляем временную VG:
 ```
 [root@lvm vagrant]# lvremove /dev/vg_root/lv_root
 Do you really want to remove active logical volume vg_root/lv_root? [y/n]: y
@@ -270,7 +270,7 @@ sde                        8:64   0    1G  0 disk
 
 ### Выделить том под __/home__ : ###
 
-- По тому же принципу что делали для __/var__
+- По тому же принципу что делали для __/var__:
 ```
 [root@lvm vagrant]# lvcreate -n LogVol_Home -L 2G /dev/VolGroup00
   Logical volume "LogVol_Home" created.
@@ -314,7 +314,7 @@ sdd                          8:48   0    1G  0 disk
 sde                          8:64   0    1G  0 disk
 ```
 
-- Правим fstab для автоматического монтированиā __/home__
+- Правим fstab для автоматического монтированиā __/home__:
 ```
 [root@lvm vagrant]# echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
 ```
