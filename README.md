@@ -34,7 +34,7 @@
 
 Решение: [3 лаба](https://github.com/grigorievap/OTUS/tree/main/Lab_3)
 
-1. [ ] Основное ДЗ
+1. [x] Основное ДЗ
    1. [ ] ДЗ со *
 ---
 
